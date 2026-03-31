@@ -1,115 +1,85 @@
-# Sistema de Gerenciamento de Telecomunicações (Sistemas Distribuídos)
+# Sistema Telecom: RMI e Serializacao Customizada
 
-Este projeto implementa uma solução de comunicação entre processos (IPC) utilizando **Java RMI**, **Sockets TCP** e a criação de um **Protocolo de Serialização Binário Customizado**. 
-
-O objetivo é gerenciar serviços de uma operadora de telefonia, permitindo o registro de reclamações e a ativação de serviços através de diferentes métodos de transporte de dados.
+Este projeto consiste em um sistema distribuido para gerenciamento de linhas telefonicas, integrando o middleware Java RMI com um protocolo de serializacao binaria manual desenvolvido sobre as classes InputStream e OutputStream.
 
 ---
 
-## Arquitetura do Projeto
+## 1. Funcionalidades do Sistema
 
-O projeto está dividido em quatro camadas principais:
-
-### 1. Domínio (POJOs)
-* **`Servico.java`**: Superclasse abstrata que define a estrutura base dos serviços (Siga-me, Secretária).
-* **`Linha.java`**: Objeto principal que representa o cliente (Titular, Número, Lista de Serviços).
-
-### 2. Protocolo de Serialização (Streams Customizados)
-* **`LinhaOutputStream.java`**: Implementa a lógica de escrita manual de objetos em bytes.
-* **`LinhaInputStream.java`**: Implementa a lógica de leitura e reconstrução de objetos a partir de bytes.
-> **Nota:** Não utiliza `ObjectOutputStream` padrão do Java, garantindo um protocolo binário otimizado.
-
-### 3. Comunicação Remota (Middleware)
-* **`Reclamacao.java`**: Interface remota (RMI).
-* **`ReclamacaoServiceImpl.java`**: Lógica de negócio do servidor.
-* **`ServidorRMI.java`**: Publica o serviço no `rmiregistry`.
-* **`ClienteRMI.java`**: Interface interativa para o usuário final.
-
-### 4. Validação e Testes
-* **`TestesStreams.java`**: Teste automatizado que valida os Streams em:
-    * **Arquivos** (`FileOutputStream`)
-    * **Rede** (`Sockets TCP`)
-    * **Console** (`System.out` / `System.in`)
+- Persistencia Binaria: Conversao de objetos da classe Linha para fluxos de bytes.
+- RMI Distribuido: Registro e consulta de reclamacoes via Java RMI Registry.
+- Polimorfismo: Gerenciamento de servicos (Siga-me e Secretaria) agregados a Linha.
+- Interface Interativa: Menu em modo texto para operacoes em tempo real via Scanner.
 
 ---
 
-## Como Executar
+## 2. Arquitetura de Comunicacao
 
-Siga a ordem abaixo para garantir que o ambiente esteja configurado corretamente.
-
-### 1. Compilação
-Abra o terminal na pasta do projeto e compile todos os arquivos:
-```bash
-javac *.java
-```
----
-### 2. Infraestrutura de Dados (Streams Customizados)
-
-Nesta camada, implementamos a lógica de baixo nível para transformar objetos em sequências de bytes (binário), atendendo aos requisitos de serialização manual do trabalho.
-
-### `LinhaOutputStream.java` (Escrita)
-Subclasse de `OutputStream` responsável por percorrer um array de objetos `Linha` e escrever seus atributos no destino seguindo o protocolo:
-1. **Controle:** Escreve a quantidade total de objetos (`writeInt`).
-2. **Atributos:** Para cada `Linha`, extrai o `Titular` e `Número`.
-3. **Protocolo:** Envia o tamanho da String (`writeInt`) seguido pelos bytes reais da String (`write`).
-4. **Simulação:** Envia um valor inteiro de 4 bytes representando a quantidade de serviços.
-
-### `LinhaInputStream.java` (Leitura)
-Subclasse de `InputStream` que realiza o processo inverso:
-1. Lê o cabeçalho para saber quantos objetos processar.
-2. Reconstrói as Strings lendo exatamente a quantidade de bytes indicada pelos inteiros de tamanho.
-3. Instancia novos objetos `Linha` com os dados recuperados do fluxo binário.
+O sistema opera atraves de uma arquitetura cliente-servidor. A camada de transporte utiliza RMI para chamadas de metodo remoto, enquanto a camada de dados utiliza um protocolo binario customizado para otimizar o envio de objetos complexos atraves de arrays de bytes.
 
 ---
 
-### 3. Comunicação Remota (RMI)
+## 3. Instrucoes para Execucao
 
-O sistema utiliza o middleware **Java RMI** para permitir que o cliente execute métodos em um objeto que reside em outra Máquina Virtual (JVM).
+Para o funcionamento correto dos servicos, siga a ordem de inicializacao dos terminais:
 
-### `Reclamacao.java` (Interface)
-Define o contrato de serviço. Todos os métodos aqui declarados podem ser chamados remotamente pelo cliente.
-* `registrarReclamacao(String, String)`: Registro simples de texto.
-* `consultarStatusReclamacao(String)`: Busca no banco de dados do servidor.
-* `ativarServicoOtimizado(byte[])`: Método que recebe dados serializados pelos **Streams Customizados**.
+### Passo 1: Compilacao
+Acesse a pasta do projeto e compile todos os modulos:
+    javac *.java
 
-### `ReclamacaoServiceImpl.java` (Implementação)
-Contém a lógica de negócio e o "banco de dados" em memória (`HashMap`). É aqui que o servidor processa as requisições e gera os protocolos de atendimento.
+### Passo 2: Inicializacao do Servidor
+O servidor e responsavel por iniciar o registro RMI na porta 1099 e publicar o objeto de servico:
+    java ServidorRMI
 
-### `ServidorRMI.java` e `ClienteRMI.java`
-O **Servidor** inicializa o `LocateRegistry` e publica o objeto remoto. O **Cliente** utiliza um `Scanner` para interagir com o usuário e o `Naming.lookup` para encontrar o servidor na rede.
+Log esperado: "--- Servidor de Reclamacoes PRONTO ---"
 
----
-
-### 4. Validação e Testes
-
-O arquivo **`TestesStreams.java`** foi criado para garantir que os streams funcionem de forma polimórfica em diferentes meios de transporte:
-
-1. **Teste com Arquivo:** Grava a lista de linhas em `linhas_dados.bin` e lê de volta para validar a integridade.
-2. **Teste com Sockets TCP:** Cria um `ServerSocket` em uma Thread e um `Socket` cliente em outra. Os objetos são transmitidos via rede local (localhost) através dos streams customizados.
-3. **Teste com System IO:** Demonstra a escrita de dados binários diretamente no console (`System.out`).
+### Passo 3: Execucao do Cliente
+Em um novo terminal, execute a interface de usuario:
+    java ClienteRMI
 
 ---
 
-### Fluxo de Execução Resumido
+## 4. Protocolo Binario Customizado (Opcao 3)
 
-O diagrama abaixo ilustra como os componentes se conectam durante a execução da **Opção 3** (Ativação via Stream):
+A serializacao manual (Opcao 3 do menu) utiliza o padrao Length-Prefix. A estrutura do datagrama binario segue a seguinte ordem rigorosa:
 
+1. numLinhas (int - 4 bytes): Total de objetos serializados no pacote.
+2. tamNome (int - 4 bytes): Comprimento da String Nome em bytes.
+3. nome (bytes): Dados binarios codificados da String Nome.
+4. tamTitular (int - 4 bytes): Comprimento da String Titular em bytes.
+5. titular (bytes): Dados binarios codificados da String Titular.
+6. qtdServicos (int - 4 bytes): Inteiro representando a quantidade de servicos ativos na linha.
 
+---
 
-1. **Cliente:** Lê dados -> `LinhaOutputStream` -> `byte[]`.
-2. **Rede:** Envia `byte[]` via RMI.
-3. **Servidor:** Recebe `byte[]` -> `LinhaInputStream` -> Objeto `Linha`.
+## 5. Estrutura do Codigo Fonte
+
+- Linha.java: Modelo de dados principal e agregacao de servicos.
+- Servico.java: Classe base abstrata para definicoes de Siga-me e Secretaria.
+- LinhaOutputStream.java: Implementacao da serializacao manual (Objeto para Byte).
+- LinhaInputStream.java: Implementacao da desserializacao manual (Byte para Objeto).
+- Reclamacao.java: Interface remota definindo os contratos RMI.
+- ReclamacaoServiceImpl.java: Implementacao da logica de negocios e persistencia em memoria.
+- ServidorRMI.java: Classe de inicializacao, criacao de registro e bind.
+- ClienteRMI.java: Interface de usuario com menu de selecao e Scanner.
+- TestesStreams.java: Modulo de validacao para fluxos em Arquivo, Socket TCP e System IO.
 
 ---
 
-### Requisitos Atendidos (Trabalho 1)
+## 6. Conceitos de Sistemas Distribuidos Demonstrados
 
-| Item | Descrição | Status |
-| :--- | :--- | :--- |
-| **1** | Definição de serviço remoto e classes POJO. |OK|
-| **2.a** | Subclasse `OutputStream` com envio de array e 3 atributos. |OK|
-| **2.b** | Testes em System.out, Arquivo e Servidor TCP. |OK|
-| **3.a** | Subclasse `InputStream` para reconstrução de dados. |OK|
-| **3.b/c/d** | Testes em System.in, FileInputStream e Servidor TCP. |OK|
+- Programacao Orientada a Objetos: Heranca, Polimorfismo e Agregacao.
+- Middleware: Uso de RMI Registry, Stubs e UnicastRemoteObject.
+- Marshalling e Unmarshalling: Conversao manual de tipos abstratos para binario.
+- Redes: Comunicacao via Sockets TCP e tratamento de falhas de conexao.
 
 ---
+
+## 7. Requisitos Tecnicos
+
+- Ambiente: Java JDK 8 ou superior.
+- Bibliotecas: Utilizacao exclusiva de pacotes nativos (java.rmi, java.io, java.net, java.util).
+- Compatibilidade: Linux, Windows e macOS.
+
+---
+Documentacao gerada para o Trabalho 1 da disciplina de Sistemas Distribuidos.
