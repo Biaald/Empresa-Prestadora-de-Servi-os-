@@ -15,7 +15,7 @@ public class ClienteRMI {
                 System.out.println("\n--- TELECOM ATENDIMENTO ---");
                 System.out.println("1. Registrar Nova Reclamação");
                 System.out.println("2. Consultar Status de Protocolo");
-                System.out.println("3. Nome do titular");
+                System.out.println("3. Ativar Linha via Stream");
                 System.out.println("4. Sair");
                 System.out.print("Escolha uma opção: ");
                 
