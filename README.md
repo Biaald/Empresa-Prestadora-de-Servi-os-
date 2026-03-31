@@ -82,4 +82,3 @@ A serializacao manual (Opcao 3 do menu) utiliza o padrao Length-Prefix. A estrut
 - Compatibilidade: Linux, Windows e macOS.
 
 ---
-Documentacao gerada para o Trabalho 1 da disciplina de Sistemas Distribuidos.
