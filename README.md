@@ -27,19 +27,24 @@ Para o funcionamento correto dos servicos, siga a ordem de inicializacao dos ter
 Acesse a pasta do projeto e compile todos os modulos:
 
 ```
-    javac *.java
+javac *.java
 ```
 
 ### Passo 2: Inicializacao do Servidor
 O servidor e responsavel por iniciar o registro RMI na porta 1099 e publicar o objeto de servico:
-    java ServidorRMI
-
-Log esperado: "--- Servidor de Reclamacoes PRONTO ---"
+```
+java ServidorRMI
+```
+Log esperado:
+```
+--- Servidor de Reclamacoes PRONTO ---
+```
 
 ### Passo 3: Execucao do Cliente
 Em um novo terminal, execute a interface de usuario:
-    java ClienteRMI
-
+```
+java ClienteRMI
+```
 ---
 
 ## 4. Protocolo Binario Customizado (Opcao 3)
