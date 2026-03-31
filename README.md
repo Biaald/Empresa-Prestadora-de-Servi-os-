@@ -25,7 +25,10 @@ Para o funcionamento correto dos servicos, siga a ordem de inicializacao dos ter
 
 ### Passo 1: Compilacao
 Acesse a pasta do projeto e compile todos os modulos:
+
+```
     javac *.java
+```
 
 ### Passo 2: Inicializacao do Servidor
 O servidor e responsavel por iniciar o registro RMI na porta 1099 e publicar o objeto de servico:
