@@ -4,9 +4,7 @@ Modelagem de dominio de servicos telefonicos (Servico, Linha, ativacao de servic
 
 Este projeto demonstra modelagem de domínio para serviços telefônicos (Serviço, Linha, ativação) com streams customizados para serialização/deserialização binária de objetos **Linha**. Inclui também um serviço RMI simples para reclamações.
 
-[![Java CI](https://github.com/Biaald/Empresa-Prestadora-de-Servi-os-/workflows/Java%20CI/badge.svg)](https://github.com/Biaald/Empresa-Prestadora-de-Servi-os-/actions)
-
-## ✨ Visão Geral
+## Visão Geral
 
 O projeto contém **dois blocos principais**:
 
