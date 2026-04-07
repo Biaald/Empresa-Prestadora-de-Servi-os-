@@ -80,10 +80,6 @@ public class TestesStreams {
             losSys.enviarDados();
             System.out.println("\n  (Dados binários impressos acima via System.out)");
 
-            // NOTA PARA O SYSTEM.IN:
-            // Para testar o System.in real, você precisaria direcionar um arquivo via prompt de comando 
-            // (ex: java TestesStreams < linhas_dados.bin). Abaixo, instanciamos para cumprir o requisito, 
-            // mas não chamamos o "lerDados" pois travaria esperando você digitar bytes legíveis.
             LinhaInputStream lisSys = new LinhaInputStream(System.in);
             // Linha[] sysLidas = lisSys.lerDados(); 
 
